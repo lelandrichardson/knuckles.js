@@ -33,7 +33,8 @@ Things I'd like to cover:
         slider
         popover (with templating)
         fadeIn/fadeOut
-        dialog box
+        dialog box / modal / lightbox
+
 
     combo box widget
     autocomplete (templated ?!)
@@ -41,13 +42,14 @@ Things I'd like to cover:
 
     More Binding handlers:
         foreach augmentation: (limit to, orderBy, etc)
-        isInView
+        isInView (or maybe it should be called waypoint?) (jquery plugin for this: https://github.com/zuk/jquery.inview)
         tooltip
         switch-case control flow bindings  (https://github.com/mbest/knockout-switch-case)
         click-toggle
         click-increment
         click-decrement
         module -> rpn library (https://github.com/rniemeyer/knockout-amd-helpers)
+        dateFormat -> (https://github.com/phstc/jquery-dateFormat)
     observable dictionary...
 
 
@@ -80,6 +82,12 @@ Things I'd like to cover:
 
     take a look at this paging framework:
     https://github.com/wyuenho/backbone-pageable
+
+    jquery validation:
+    https://github.com/jzaefferer/jquery-validation
+
+    jquery timeago:
+    https://github.com/rmm5t/jquery-timeago
 
 
     UNIT TESTING!!!
