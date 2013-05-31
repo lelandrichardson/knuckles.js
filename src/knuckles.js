@@ -24,6 +24,9 @@ Things I'd like to cover:
     "protected" observables?
     model editor pattern
 
+    a ".hide()" extensions method to prevent object from being serialized by ko.toJSON?
+
+
     jquery widgets
         calendar
         menu?
@@ -44,7 +47,7 @@ Things I'd like to cover:
         click-toggle
         click-increment
         click-decrement
-
+        module -> rpn library (https://github.com/rniemeyer/knockout-amd-helpers)
     observable dictionary...
 
 
@@ -53,9 +56,10 @@ Things I'd like to cover:
         $http
         $controller
 
-        application-wide pub-sub
+        application-wide pub-sub (https://github.com/rniemeyer/knockout-postbox)
 
     Templating...
+    can we utilize AMD/require here?
 
 
 
@@ -79,6 +83,9 @@ Things I'd like to cover:
 
 
     UNIT TESTING!!!
+
+
+
 
 
 */
