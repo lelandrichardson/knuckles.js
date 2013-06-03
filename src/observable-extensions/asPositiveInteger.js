@@ -1,7 +1,7 @@
 //extension to replace an observable with a writeable computed that forces write to be numeric
-ko.observable.fn.asPositiveInteger = function(defaultForBadValue){
+observable.fn.asPositiveInteger = function(defaultForBadValue){
     var original = this,
-        interceptor = ko.computed({
+        interceptor = computed({
             read: original,
             write: function(newValue){
                 var parsed = parseInt(newValue, 10);

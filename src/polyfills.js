@@ -1,7 +1,11 @@
-/**
- * Created with JetBrains WebStorm.
- * User: leland
- * Date: 6/1/13
- * Time: 8:46 PM
- * To change this template use File | Settings | File Templates.
- */
+if (!Date.prototype.toISOString) {
+    Date.prototype.toISOString = function() {
+        function pad(n) { return n < 10 ? '0' + n : n }
+        return this.getUTCFullYear() + '-'
+            + pad(this.getUTCMonth() + 1) + '-'
+            + pad(this.getUTCDate()) + 'T'
+            + pad(this.getUTCHours()) + ':'
+            + pad(this.getUTCMinutes()) + ':'
+            + pad(this.getUTCSeconds()) + 'Z';
+    };
+}

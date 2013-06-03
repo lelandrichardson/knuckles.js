@@ -49,7 +49,7 @@ Things I'd like to cover:
         click-increment
         click-decrement
         module -> rpn library (https://github.com/rniemeyer/knockout-amd-helpers)
-        dateFormat -> (https://github.com/phstc/jquery-dateFormat)
+        xxdateFormat -> (https://github.com/phstc/jquery-dateFormat)
     observable dictionary...
 
 
@@ -87,7 +87,7 @@ Things I'd like to cover:
     https://github.com/jzaefferer/jquery-validation
 
     jquery timeago:
-    https://github.com/rmm5t/jquery-timeago
+    x https://github.com/rmm5t/jquery-timeago
 
 
     UNIT TESTING!!!
@@ -97,3 +97,134 @@ Things I'd like to cover:
 
 
 */
+(function(){
+    //global object
+    var root = this;
+
+
+    var previousKnuckles = root.Knuckles;
+
+
+    var Backbone;
+    if (typeof exports !== 'undefined') {
+        Knuckles = exports;
+    } else {
+        Knuckles = root.Knuckles = {};
+    }
+
+    Knuckles.VERSION = "0.0.1";
+
+
+
+    Knuckles.noConflict = function() {
+        root.Knuckles = previousKnuckles;
+        return this;
+    };
+
+
+
+
+}).call(this);
+
+
+// The potential API
+// -------------------------------------------------------------
+var kn = Knuckles;
+
+// create a model
+var Cocktail = Knuckles.ViewModel.define(function(spec){
+    var self = this;
+    self.id = kn.Identifier();
+    self.name = kn.String();
+    self.type = kn.String();
+    self.rating = kn.positiveInt();
+
+    self.populate(spec());
+});
+
+// create a model
+var Cocktail = Knuckles.ViewModel.define({
+        resource: 'cocktail'
+    },
+    function(spec){
+        var self = this;
+        self.id = null;
+        self.name = ko.observable();
+        self.type = ko.observable();
+        self.rating = null;
+
+        self.populate(spec);
+    }).ajaxify();
+
+
+define([
+    "$ajax",
+    ""
+],function($ajax){
+
+    var Cocktail = Knuckles.ViewModel.define({
+            resource: 'cocktail'
+        },
+        function(spec){
+            var self = this;
+            self.id = null;
+            self.name = ko.observable();
+            self.type = ko.observable();
+            self.rating = null;
+
+            self.populate(spec);
+
+
+        });
+
+    restify(Cocktail,$ajax);
+
+});
+
+
+
+
+
+
+
+
+
+
+Knuckles.Application.define({
+    needs: ['Cocktail'],
+    run: function(Cocktail){
+        var cocktail = Cocktail.get(123);
+
+    }
+});
+
+
+Knuckles.Model.define({
+    name: 'Cocktail',
+    needs: ['$http','$async','Ingredient'],
+    factory: function(spec, $http, $async, Ingredient){
+        var self = this;
+
+        self.id = ko.observable();
+        self.name = ko.observable();
+
+        self.ingredients = ko.observable().ofType(Ingredient);
+    },
+    implements: ['restify']
+});
+
+Knuckles.Model.define({
+    name: 'Ingredient',
+    factory: function(spec){
+        this.id = ko.observable();
+        this.name = ko.observable();
+    },
+    implements: ['restify']
+});
+
+
+
+
+
+
+

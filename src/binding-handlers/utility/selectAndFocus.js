@@ -1,7 +1,15 @@
-/**
- * Created with JetBrains WebStorm.
- * User: leland
- * Date: 6/2/13
- * Time: 12:57 AM
- * To change this template use File | Settings | File Templates.
- */
+bindingHandlers.selectAndFocus = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        bindingHandlers.hasfocus.init(element, valueAccessor, allBindingsAccessor);
+        registerEventHandler(element, 'focus', function () {
+            element.focus();
+        });
+    },
+    update: function (element, valueAccessor) {
+        unwrap(valueAccessor()); // for dependency
+        // ensure that element is visible before trying to focus
+        setTimeout(function () {
+            bindingHandlers.hasfocus.update(element, valueAccessor);
+        }, 0);
+    }
+};

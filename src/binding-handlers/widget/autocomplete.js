@@ -1,4 +1,4 @@
-ko.bindingHandlers.calendar = {
+ko.bindingHandlers.autocomplete = {
     init: function(element, valueAccessor, allBindingsAccessor){
 
     },

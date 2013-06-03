@@ -1,9 +1,9 @@
-ko.bindingHandlers.keys = {
+bindingHandlers.keys = {
     init: function (element, valueAccessor, allBindings, vm) {
-        var actions = ko.utils.unwrapObservable(valueAccessor()) || {},
+        var actions = unwrap(valueAccessor()) || {},
             handler = function (event) {
                 var action = actions['key' + event.keyCode],
-                    modifier = ko.utils.unwrapObservable(allBindings().modifier),
+                    modifier = unwrap(allBindings().modifier),
                     result;
 
                 if (action) {
@@ -17,6 +17,6 @@ ko.bindingHandlers.keys = {
                 }
             };
 
-        ko.utils.registerEventHandler(element, 'keyup', handler);
+        registerEventHandler(element, 'keyup', handler);
     }
 };

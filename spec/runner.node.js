@@ -25,19 +25,19 @@ if (process.argv.length > 2 && process.argv[2] == '--source') {
     };
     require('../build/fragments/source-references');
 } else {
-    global.ko = require('../build/output/knockout-latest.js');
+    global.ko = require('../build/output/knuckles-latest.js');
 }
 
 // reference behaviors that should work out of browser
-require('./arrayEditDetectionBehaviors');
-require('./asyncBehaviors');
-require('./dependentObservableBehaviors');
-require('./expressionRewritingBehaviors');
-require('./extenderBehaviors');
-require('./mappingHelperBehaviors');
-require('./observableArrayBehaviors');
-require('./observableBehaviors');
-require('./subscribableBehaviors');
+//require('./arrayEditDetectionBehaviors');
+//require('./asyncBehaviors');
+//require('./dependentObservableBehaviors');
+//require('./expressionRewritingBehaviors');
+//require('./extenderBehaviors');
+//require('./mappingHelperBehaviors');
+//require('./observableArrayBehaviors');
+//require('./observableBehaviors');
+//require('./subscribableBehaviors');
 
 // get reference to jasmine runtime
 var env = jasmine.jasmine.getEnv();
@@ -49,20 +49,20 @@ function failureFilter(item) {
 env.addReporter({
     reportRunnerResults:function (runner) {
         var results = runner.results();
-        runner.suites().map(function (suite) {
-            // hack around suite results not having a description
-            var suiteResults = suite.results();
-            suiteResults.description = suite.description;
-            return suiteResults;
-        }).filter(failureFilter).forEach(function (suite) {
-            console.error(suite.description);
-            suite.getItems().filter(failureFilter).forEach(function (spec) {
-                console.error('\t' + spec.description);
-                spec.getItems().filter(failureFilter).forEach(function (expectation) {
-                    console.error('\t\t' + expectation.message);
-                });
-            });
-        });
+//        runner.suites().map(function (suite) {
+//            // hack around suite results not having a description
+//            var suiteResults = suite.results();
+//            suiteResults.description = suite.description;
+//            return suiteResults;
+//        }).filter(failureFilter).forEach(function (suite) {
+//            console.error(suite.description);
+//            suite.getItems().filter(failureFilter).forEach(function (spec) {
+//                console.error('\t' + spec.description);
+//                spec.getItems().filter(failureFilter).forEach(function (expectation) {
+//                    console.error('\t\t' + expectation.message);
+//                });
+//            });
+//        });
         console.log("Total:" + results.totalCount + " Passed:" + results.passedCount + " Failed:" + results.failedCount);
         process.exit(results.failedCount);
     }

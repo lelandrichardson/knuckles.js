@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>knuckles.js</title>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <title>Knuckles.js • TodoMVC</title>
     <!--<script src="../lib/require.js"></script>-->
     <script src="../../lib/jquery.min.js"></script>
     <script src="../../lib/knockout-2.2.1.js"></script>
     <script src="../../build/output/knuckles-latest.js"></script>
+
+    <link rel="stylesheet" href="base.css">
+
 </head>
 <body>
 <section id="todoapp">
@@ -63,40 +68,8 @@
 
 var todomvc = Knuckles.module('todomvc',[]);
 
-
-// BINDING HANDLERS
-// --------------------------------------------------------
-//Knuckles.bindingHandler({
-//    name: 'todoFocus',
-//    init: function(){
-//
-//    },
-//    update: function(){
-//
-//    }
-//});
-//
-//todomvc.bindingHandler({
-//    name: 'todoFocus',
-//    deps: ['$async'],
-//    factory: function ($async) {
-//        return {
-//            init: function(){
-//
-//            },
-//            update: function(){
-//
-//            }
-//        };
-//    }
-//});
-
-
 // MODULE SERVICES
 // ------------------------------------------------------------
-
-
-// storage service...
 todomvc.service({
     name: 'todoStorage',
     deps: ['$localStorage'],
@@ -116,13 +89,8 @@ todomvc.service({
 });
 
 
-
-
-
 // MODULE VIEW MODELS
 // ------------------------------------------------------------
-
-
 todomvc.viewModel({
     name: 'TodoItem',
     factory: function(spec){
@@ -130,9 +98,6 @@ todomvc.viewModel({
         self.title = ko.observable(spec.title);
         self.completed = ko.observable(spec.completed);
         self.editing = ko.observable(false);
-    },
-    proto: {
-
     }
 });
 
@@ -203,6 +168,12 @@ todomvc.viewModel({
         // Methods
         // ------------------------------------------
 
+        self.getLabel = function (count) {
+            return ko.utils.unwrapObservable(count) === 1 ? 'item' : 'items';
+        };
+
+
+
         ko.computed(function () {
             todoStorage.put(ko.toJS(self.todos));
         }).extend({throttle: 500}); // save at most twice per second
@@ -210,16 +181,27 @@ todomvc.viewModel({
 
 
 
+        Knuckles.extend(self,{
+            add: function(){
+                var current = this.current().trim();
+                if (current) {
+                    self.todos.push({title: current});
+                    self.current('');
+                }
+            },
+            remove: function (todo) {
+                self.todos.remove(todo);
+            },
+            removeCompleted: function () {
+                self.todos.remove(function (todo) {
+                    return todo.completed();
+                });
+            }
+        });
+
+
     }
 });
-
-(function(){
-    var todoStorage = todomvc.getResource('todoStorage');
-    todoStorage.put([
-        {title: "one", completed: false},
-        {title: "two", completed: true}
-    ]);
-})();
 
 todomvc.run(['TodoVM','todoStorage','$bind'],
     function(TodoVM,todoStorage, $bind){

@@ -1,7 +1,7 @@
 // key event handlers
 var keyBinderFactory = function(keyCode){
     return {
-        init: function(event, valueAccesor, allBindings, data) {
+        init: function(element, valueAccessor, allBindings, data) {
             var newValueAccessor = function() {
                 return {
                     keyup: function(data, event) {
@@ -11,11 +11,11 @@ var keyBinderFactory = function(keyCode){
                     }
                 };
             };
-            ko.bindingHandlers.event.init(element,newValueAccessor,allBindings,data);
+            bindingHandlers.event.init(element,newValueAccessor,allBindings,data);
         }
     };
 };
-extend(ko.bindingHandlers,{
+extend(bindingHandlers,{
     enterKey: keyBinderFactory(13),
     escapeKey: keyBinderFactory(27),
     tabKey: keyBinderFactory(9),

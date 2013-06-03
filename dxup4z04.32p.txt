@@ -1,0 +1,122 @@
+﻿the monstrosity that was my weekend...
+- built working TodoMVC project based on knuckles API
+- got most of the IOC/ dependency injection working
+- formatting helpers
+- various binding helpers
+- made some fixes to .ofType() extension
+- using jquery ajax for $http for the time being...
+- added jasmine even though i added no tests
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	new file:   lib/jquery-ui.min.js
+#	new file:   lib/jquery.min.js
+#	new file:   lib/knockout-2.2.1.js
+#	new file:   lib/require.js
+#	new file:   package.json
+#	new file:   spec/lib/innershiv.js
+#	new file:   spec/lib/jasmine-1.2.0/MIT.LICENSE
+#	new file:   spec/lib/jasmine-1.2.0/jasmine-html.js
+#	new file:   spec/lib/jasmine-1.2.0/jasmine-tap.js
+#	new file:   spec/lib/jasmine-1.2.0/jasmine.css
+#	new file:   spec/lib/jasmine-1.2.0/jasmine.js
+#	new file:   spec/lib/jasmine.extensions.css
+#	new file:   spec/lib/jasmine.extensions.js
+#	new file:   spec/lib/json2.js
+#	new file:   spec/runner.html
+#	new file:   spec/runner.node.js
+#	new file:   spec/runner.phantom.js
+#	new file:   spec/todoMVC/base.css
+#	new file:   spec/todoMVC/debug.html
+#	new file:   spec/todomvc.js
+#	deleted:    src/binding-handlers/$sortable.js
+#	renamed:    src/binding-handlers/_convenience-attribute-bindings.js -> src/binding-handlers/convenience/attribute-bindings.js
+#	new file:   src/binding-handlers/convenience/click-helpers.js
+#	renamed:    src/binding-handlers/dynamicValue.js -> src/binding-handlers/convenience/dynamicValue.js
+#	renamed:    src/binding-handlers/hidden.js -> src/binding-handlers/convenience/hidden.js
+#	deleted:    src/binding-handlers/currency.js
+#	deleted:    src/binding-handlers/date.js
+#	new file:   src/binding-handlers/formatting/currency.js
+#	new file:   src/binding-handlers/formatting/date.js
+#	new file:   src/binding-handlers/formatting/timeAgo.js
+#	renamed:    src/binding-handlers/toJSON.js -> src/binding-handlers/formatting/toJSON.js
+#	deleted:    src/binding-handlers/timeAgo.js
+#	renamed:    src/binding-handlers/keyBindings.js -> src/binding-handlers/utility/keyBindings.js
+#	renamed:    src/binding-handlers/keys.js -> src/binding-handlers/utility/keys.js
+#	renamed:    src/binding-handlers/on.js -> src/binding-handlers/utility/on.js
+#	new file:   src/binding-handlers/utility/selectAndFocus.js
+#	renamed:    src/binding-handlers/stopBinding.js -> src/binding-handlers/utility/stopBinding.js
+#	renamed:    src/binding-handlers/$progressBar.js -> src/binding-handlers/widget/$progressBar.js
+#	new file:   src/binding-handlers/widget/autocomplete.js
+#	new file:   src/binding-handlers/widget/calendar.js
+#	new file:   src/loader.js
+#	new file:   src/module-scope.js
+#	new file:   src/module.js
+#	new file:   src/module/injector.js
+#	new file:   src/module/loader.js
+#	new file:   src/namespace.js
+#	new file:   src/observableArray-extensions/filter.js
+#	new file:   src/polyfills.js
+#	new file:   src/services/async.js
+#	new file:   src/services/bind.js
+#	new file:   src/services/http.js
+#	new file:   src/services/jqhttp.js
+#	new file:   src/services/localStorage.js
+#	new file:   src/services/promises.js
+#	new file:   src/utilities/formatting-date.js
+#	new file:   src/utilities/formatting.js
+#	new file:   src/utilities/mapping.js
+#	new file:   src/utilities/utilities.js
+#	new file:   src/utilities/validation.js
+#	new file:   src/version.js
+#
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   package.json
+#	modified:   spec/runner.html
+#	modified:   spec/runner.node.js
+#	modified:   spec/todoMVC/base.css
+#	modified:   spec/todoMVC/debug.html
+#	modified:   spec/todomvc.js
+#	modified:   src/binding-handlers/convenience/click-helpers.js
+#	modified:   src/binding-handlers/utility/keyBindings.js
+#	modified:   src/binding-handlers/utility/keys.js
+#	modified:   src/binding-handlers/utility/selectAndFocus.js
+#	modified:   src/binding-handlers/widget/autocomplete.js
+#	modified:   src/knuckles.js
+#	modified:   src/loader.js
+#	modified:   src/module-scope.js
+#	modified:   src/module.js
+#	modified:   src/module/injector.js
+#	modified:   src/module/loader.js
+#	modified:   src/namespace.js
+#	modified:   src/observable-extensions/asPositiveInteger.js
+#	modified:   src/observable-extensions/ofPattern.js
+#	modified:   src/observable-extensions/withoutPattern.js
+#	modified:   src/observableArray-extensions/filter.js
+#	modified:   src/observableArray-extensions/ofType.js
+#	modified:   src/polyfills.js
+#	modified:   src/services/bind.js
+#	modified:   src/services/http.js
+#	modified:   src/services/jqhttp.js
+#	modified:   src/services/localStorage.js
+#	modified:   src/services/promises.js
+#	modified:   src/utilities/formatting-date.js
+#	modified:   src/utilities/formatting.js
+#	modified:   src/utilities/mapping.js
+#	modified:   src/utilities/utilities.js
+#	modified:   src/utilities/validation.js
+#	modified:   src/version.js
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	spec/todoMVC/bg.png
+#	src/binding-handlers/collections/
+

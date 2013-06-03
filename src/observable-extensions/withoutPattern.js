@@ -1,6 +1,6 @@
-ko.observable.fn.withoutPattern = function(pattern){
+observable.fn.withoutPattern = function(pattern){
     var original = this,
-        interceptor = ko.computed({
+        interceptor = computed({
             read: original,
             write: function(newValue){
                 newValue = newValue.replace(pattern,'');

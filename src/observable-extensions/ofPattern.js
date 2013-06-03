@@ -1,6 +1,6 @@
-ko.observable.fn.ofPattern = function(pattern){
+observable.fn.ofPattern = function(pattern){
     var original = this,
-        interceptor = ko.computed({
+        interceptor = computed({
             read: original,
             write: function(newValue){
                 if(pattern.test(newValue)) {

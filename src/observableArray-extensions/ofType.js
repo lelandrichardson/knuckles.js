@@ -1,7 +1,8 @@
 
 var ctorKey = '__ko_typed_array_ctor__',
+    underlyingKey = '__ko_typed_array_underlying__',
     toArray = function(args){
-        return Array.prototype.slice.call(args, 0).sort();
+        return slice.call(args, 0).sort();
     },
     cmap = function(array,Ctor){
         var i,
@@ -12,48 +13,59 @@ var ctorKey = '__ko_typed_array_ctor__',
         }
         return results;
     },
-    newMethods = {};
+    newMethods = {
+        'splice': function () {
+            var that = this[underlyingKey];
+            var needToMap = false,
+                mappedArguments;
+            if(arguments[2] !== undefined && !(arguments[2] instanceof this[ctorKey])){
+                needToMap = true;
+                mappedArguments = cmap(toArray(arguments).slice(2),that[ctorKey]);
+                mappedArguments.unshift(arguments[0],arguments[1]);
+            }
 
-ko.utils.arrayForEach(["push", "unshift"], function (methodName) {
+            // Use "peek" to avoid creating a subscription in any computed that we're executing in the context of
+            // (for consistency with mutating regular observables)
+            var underlyingArray = that.peek();
+            that.valueWillMutate();
+            var methodCallResult = underlyingArray['splice'].apply(underlyingArray, needToMap ? mappedArguments : arguments);
+            that.valueHasMutated();
+            return methodCallResult;
+        }
+    };
+
+each(['remove','removeAll','destroy','destroyAll','replace'],function(methodName){
+    newMethods[methodName] = function (valueOrPredicate) {
+        var that = this[underlyingKey];
+        that[methodName].apply(that,arguments);
+    }
+});
+
+
+each(["push", "unshift"], function (methodName) {
     newMethods[methodName] = function () {
+        var that = this[underlyingKey];
         var needToMap = false,
             mappedArguments;
-        if(arguments[0] !== undefined && !(arguments[0] instanceof this[ctorKey])){
+        if(arguments[0] !== undefined && !(arguments[0] instanceof that[ctorKey])){
             needToMap = true;
-            mappedArguments = cmap(toArray(arguments),this[ctorKey]);
+            mappedArguments = cmap(toArray(arguments),that[ctorKey]);
         }
 
         // Use "peek" to avoid creating a subscription in any computed that we're executing in the context of
         // (for consistency with mutating regular observables)
-        var underlyingArray = this.peek();
-        this.valueWillMutate();
+        var underlyingArray = that.peek();
+        that.valueWillMutate();
         var methodCallResult = underlyingArray[methodName].apply(underlyingArray, needToMap ? mappedArguments : arguments);
-        this.valueHasMutated();
+        that.valueHasMutated();
         return methodCallResult;
     };
 });
 
-newMethods['splice'] = function () {
-    var needToMap = false,
-        mappedArguments;
-    if(arguments[2] !== undefined && !(arguments[2] instanceof this[ctorKey])){
-        needToMap = true;
-        mappedArguments = cmap(toArray(arguments).slice(2),this[ctorKey]);
-        mappedArguments.unshift(arguments[0],arguments[1]);
-    }
 
-    // Use "peek" to avoid creating a subscription in any computed that we're executing in the context of
-    // (for consistency with mutating regular observables)
-    var underlyingArray = this.peek();
-    this.valueWillMutate();
-    var methodCallResult = underlyingArray['splice'].apply(underlyingArray, needToMap ? mappedArguments : arguments);
-    this.valueHasMutated();
-    return methodCallResult;
-};
-
-ko.observableArray.fn.ofType = function(Ctor){
+observableArray.fn.ofType = function(Ctor){
     var underlying = this,
-        interceptor = ko.computed({
+        interceptor = computed({
             read: underlying,
             write: function(value){
                 var needToMap = false,
@@ -67,11 +79,9 @@ ko.observableArray.fn.ofType = function(Ctor){
             }
         });
 
-
+    extend(interceptor, observableArray['fn'], newMethods)
     underlying[ctorKey] = Ctor;
-
-    ko.utils.extend(interceptor, ko.observableArray['fn']);
-    ko.utils.extend(interceptor, newMethods);
+    interceptor[underlyingKey] = underlying;
 
     return interceptor;
 };
