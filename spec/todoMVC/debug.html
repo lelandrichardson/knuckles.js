@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>knuckles.js</title>
+    <!--<script src="../lib/require.js"></script>-->
+    <script src="../../lib/jquery.min.js"></script>
+    <script src="../../lib/knockout-2.2.1.js"></script>
+    <script src="../../build/output/knuckles-latest.js"></script>
+</head>
+<body>
+<section id="todoapp">
+    <header id="header">
+        <h1>todos</h1>
+        <input id="new-todo" data-bind="value: current, valueUpdate: 'afterkeydown', enterKey: add" placeholder="What needs to be done?" autofocus>
+    </header>
+    <section id="main" data-bind="visible: todos().length">
+        <input id="toggle-all" data-bind="checked: allCompleted" type="checkbox">
+        <label for="toggle-all">Mark all as complete</label>
+        <ul id="todo-list" data-bind="foreach: filteredTodos">
+            <li data-bind="css: { completed: completed, editing: editing }">
+                <div class="view">
+                    <input class="toggle" data-bind="checked: completed" type="checkbox">
+                    <label data-bind="text: title, event: { dblclick: $root.editItem }"></label>
+                    <button class="destroy" data-bind="click: $root.remove"></button>
+                </div>
+                <input class="edit" data-bind="value: title, valueUpdate: 'afterkeydown', enterKey: $root.stopEditing, selectAndFocus: editing, event: { blur: $root.stopEditing }">
+            </li>
+        </ul>
+    </section>
+    <footer id="footer" data-bind="visible: completedCount() || remainingCount()">
+			<span id="todo-count">
+				<strong data-bind="text: remainingCount">0</strong>
+				<span data-bind="text: getLabel( remainingCount )"></span> left
+			</span>
+        <ul id="filters">
+            <li>
+                <a data-bind="css: { selected: showMode() == 'all' }" href="#/all">All</a>
+            </li>
+            <li>
+                <a data-bind="css: { selected: showMode() == 'active' }" href="#/active">Active</a>
+            </li>
+            <li>
+                <a data-bind="css: { selected: showMode() == 'completed' }" href="#/completed">Completed</a>
+            </li>
+        </ul>
+        <button id="clear-completed" data-bind="visible: completedCount, click: removeCompleted">
+            Clear completed (<span data-bind="text: completedCount"></span>)
+        </button>
+    </footer>
+</section>
+<footer id="info">
+    <p>Double-click to edit a todo</p>
+    <p>Original Knockout version from <a href="https://github.com/ashish01/knockoutjs-todos">Ashish Sharma</a></p>
+    <p>Rewritten to use Knockout 2.0 and standard template by <a href="http://knockmeout.net">Ryan Niemeyer</a></p>
+    <p>Patches/fixes for cross-browser compat: <a href="http://twitter.com/addyosmani">Addy Osmani</a></p>
+    <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+</footer>
+<script>
+
+
+// APP DECLARATION
+// --------------------------------------------------------
+
+var todomvc = Knuckles.module('todomvc',[]);
+
+
+// BINDING HANDLERS
+// --------------------------------------------------------
+//Knuckles.bindingHandler({
+//    name: 'todoFocus',
+//    init: function(){
+//
+//    },
+//    update: function(){
+//
+//    }
+//});
+//
+//todomvc.bindingHandler({
+//    name: 'todoFocus',
+//    deps: ['$async'],
+//    factory: function ($async) {
+//        return {
+//            init: function(){
+//
+//            },
+//            update: function(){
+//
+//            }
+//        };
+//    }
+//});
+
+
+// MODULE SERVICES
+// ------------------------------------------------------------
+
+
+// storage service...
+todomvc.service({
+    name: 'todoStorage',
+    deps: ['$localStorage'],
+    factory: function ($localStorage) {
+        var STORAGE_ID = 'todos-knuckles';
+
+        return {
+            get: function () {
+                return JSON.parse($localStorage.getItem(STORAGE_ID) || '[]');
+            },
+
+            put: function (todos) {
+                $localStorage.setItem(STORAGE_ID, JSON.stringify(todos));
+            }
+        }
+    }
+});
+
+
+
+
+
+// MODULE VIEW MODELS
+// ------------------------------------------------------------
+
+
+todomvc.viewModel({
+    name: 'TodoItem',
+    factory: function(spec){
+        var self = this;
+        self.title = ko.observable(spec.title);
+        self.completed = ko.observable(spec.completed);
+        self.editing = ko.observable(false);
+    },
+    proto: {
+
+    }
+});
+
+
+
+todomvc.viewModel({
+    name: 'TodoVM',
+    deps: ['TodoItem','$http', 'todoStorage'],
+    factory: function(spec, TodoItem, $http, todoStorage){
+        var self = this;
+        self.current = ko.observable();
+
+        self.newTodo = ko.observable();
+        self.editedTodo = null;
+
+        self.showMode = ko.observable('all');
+
+
+
+
+        // To Do Collection
+        // ------------------------------------------
+        self.todos = ko.observableArray().ofType(TodoItem);
+
+
+        self.$populate(spec);
+        self.filteredTodos = ko.computed(function () {
+            switch (self.showMode()) {
+                case 'active':
+                    return self.todos().filter(function (todo) {
+                        return !todo.completed();
+                    });
+                case 'completed':
+                    return self.todos().filter(function (todo) {
+                        return todo.completed();
+                    });
+                default:
+                    return self.todos();
+            }
+        });
+
+        // count of all completed todos
+        self.completedCount = ko.computed(function () {
+            return self.todos().filter(function (todo) {
+                return todo.completed();
+            }).length;
+        });
+
+        // count of todos that are not complete
+        self.remainingCount = ko.computed(function () {
+            return self.todos().length - self.completedCount();
+        });
+
+        // writeable computed observable to handle marking all complete/incomplete
+        self.allCompleted = ko.computed({
+            //always return true/false based on the done flag of all todos
+            read: function () { return !self.remainingCount();},
+            // set all todos to the written value (true/false)
+            write: function (newValue) {
+                Knuckles.each(self.todos(), function (todo) {
+                    // set even if value is the same, as subscribers are not notified in that case
+                    todo.completed(newValue);
+                });
+            }
+        });
+
+
+        // Methods
+        // ------------------------------------------
+
+        ko.computed(function () {
+            todoStorage.put(ko.toJS(self.todos));
+        }).extend({throttle: 500}); // save at most twice per second
+
+
+
+
+    }
+});
+
+(function(){
+    var todoStorage = todomvc.getResource('todoStorage');
+    todoStorage.put([
+        {title: "one", completed: false},
+        {title: "two", completed: true}
+    ]);
+})();
+
+todomvc.run(['TodoVM','todoStorage','$bind'],
+    function(TodoVM,todoStorage, $bind){
+        var todos = todoStorage.get();
+        var viewModel = new TodoVM({todos: todos});
+
+        $bind(viewModel);
+    });
+
+//var testToDoMvc = Knuckles.test({
+//    module: 'todomvc',
+//    mockFactories: {
+//        '$http': function(){return {get:null,post:null};}
+//    }
+//});
+
+
+
+
+</script>
+
+</body>
+</html>
