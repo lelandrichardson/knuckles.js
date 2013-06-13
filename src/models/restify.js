@@ -120,6 +120,14 @@ var restify = function(Ctor, resource, config){
 //    }
 //});
 
+var removeSlashes = function(str){
+    return str.replace(/\//gi,'');
+};
+var constructUrl = function(cfg, self){
+    //TODO: make smarter...
+    return map([cfg.urlPrefix,cfg.resource,unwrap(self.id)],removeSlashes).split('/');
+};
+
 Knuckles.extender.define({
     name: 'restify',
     deps: ['$http'],
@@ -127,14 +135,7 @@ Knuckles.extender.define({
         urlPrefix: "/",
         idKey: "id"
     },
-    factory: function(cfg,$http){
-
-        var removeSlashes = function(str){
-            return str.replace(/\//gi,'');
-        }
-        var constructUrl = function(self){
-            return map([cfg.urlPrefix,cfg.resource,unwrap(self.id)],removeSlashes).split('/');
-        };
+    fn: function(cfg,$http){
 
         return {
             load: function(success, error){

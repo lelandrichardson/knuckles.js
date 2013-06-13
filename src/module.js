@@ -4,11 +4,31 @@ Knuckles.service = {
 };
 
 Knuckles.extender = {
+
+    /**
+     *
+     * @typedef {Object} ExtenderConfig
+     * @property {string} name
+     * @property {Array<string>} deps
+     *
+     *
+     *
+     */
+
+
+    /**
+     *
+     * @param {Object} config
+     * @returns {*}
+     */
     define: function(config){
         var name = config.name,
             deps = config.deps || [],
-            factory = config.factory,
-            defaults = config.defaults,
+            _fn = config.fn || {}, //object or factory function for instance methods
+            _static = config.static || {}, //object or factory function for static methods
+            fnIsFunction = isFunction(_fn),
+            staticIsFunction = isFunction(_static),
+            defaults = config.defaults || {}, // default "config" object
             storeInCache = config.cache === true; // default to false
 
 
@@ -21,12 +41,15 @@ Knuckles.extender = {
                 var args = slice.call(arguments);
                 args.unshift(defaults); // first entry will be "config" object
 
-                var mixin = function(config){
-                    args[0] = extend({},defaults,config);
-                    return factory.apply(this,args);
+                var mixin = function(cfg){
+                    args[0] = extend({},defaults,cfg);
+                    return {
+                        fn: fnIsFunction ? _fn.apply(this,args) : _fn,
+                        static: staticIsFunction ? _static.apply(this,args) : _static
+                    };
                 };
 
-                return mixin;
+                return extend(mixin,{'extenderName':name});
             }
         });
 
@@ -56,7 +79,7 @@ extend(Knuckles.viewModel,{
     define: function(config){
         var name = config.name,
             deps = config.deps || [],
-            proto = config.proto || {},
+            fn = config.fn || {},
             factory = config.factory,
             extenders = config.extenders || {},
             combinedDeps = [].concat(keys(extenders)).concat(deps);
@@ -84,17 +107,17 @@ extend(Knuckles.viewModel,{
                 // alias 'fn' as prototypew
                 Ctor.fn = Ctor.prototype;
 
-                //TODO: get this set up...
-                // where is i?
-                var instExtenders = map(extenders,function(el,name){
-                    return extenderArgs[i](el);
+
+                extend(Ctor.fn,Knuckles.viewModel.fn);
+                each(extenderArgs,function(extender, idx){
+                    var cfg = extenders[extender['extenderName']];
+                    var toTackOn = extender(cfg);
+
+                    extend(Ctor,toTackOn.static);
+                    extend(Ctor.fn,toTackOn.fn);
                 });
+                extend(Ctor.fn,fn);
 
-
-                // add prototype methods
-                extenderArgs.unshift(Ctor.fn, Knuckles.viewModel.fn); // first arg, Knuckles.viewModel.fn
-                extenderArgs.push(proto); // last arg (overrides everything else)
-                extend.apply(null,extenderArgs);
 
                 return Ctor;
             }

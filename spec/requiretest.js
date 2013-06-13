@@ -70,6 +70,45 @@ Knuckles.extenders.define({
     }
 });
 
+Knuckles.extenders.define({
+    name: 'restify',
+    deps:['$http'],
+    static: function(config,$http){
+        return {
+            get: function(id){
+                $http.post({
+                    url: config.rootUri + '/' + id,
+                    data: this.id
+                });
+            }
+        };
+    },
+    fn: function(config,$http){
+        return {
+            publish: function(){
+                $http.post({
+                    url: config.rootUri + '/publish',
+                    data: this.id
+                });
+            }
+        };
+    }
+});
+
+Knuckles.extenders.define({
+    name: 'restify',
+    static: {
+        toString: function(id){
+            return 'abc' + this.toString();
+        }
+    },
+    fn: {
+        debug: function(){
+            console.log(ko.toJS(this));
+        }
+    }
+});
+
 
 Knuckles.viewModel.define({
     name: 'FeedView',

@@ -163,7 +163,6 @@ var lowercase = function(string){return isString(string) ? string.toLowerCase() 
 
 
 /**
- * @ngdoc function
  * @name angular.uppercase
  * @function
  *
