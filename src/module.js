@@ -1,46 +1,39 @@
+Knuckles.service = {
+    define: container.define,
+    remove: container.remove
+};
 
-var globalRegistry = {};
-Knuckles.service = (function(){
+Knuckles.extender = {
+    define: function(config){
+        var name = config.name,
+            deps = config.deps || [],
+            factory = config.factory,
+            defaults = config.defaults,
+            storeInCache = config.cache === true; // default to false
 
-    return {
-        define: function(config){
-            var name = config.name,
-                deps = config.deps || [],
-                factory = config.factory;
 
+        return container.define({
+            name: name,
+            deps: deps,
+            cache: storeInCache,
+            factory: function(/* ... dependencies */){
 
-            // factory is required.
-            if(!isFunction(factory)){
-                $error(1234,"config object must provide factory function");
-                return;
+                var args = slice.call(arguments);
+                args.unshift(defaults); // first entry will be "config" object
+
+                var mixin = function(config){
+                    args[0] = extend({},defaults,config);
+                    return factory.apply(this,args);
+                };
+
+                return mixin;
             }
-
-            // try to use factory function name if name was not explicitly given.  otherwise error.
-            name || (name = factory.name) || $error(1235,"config object must provide a name");
+        });
 
 
-            if(has(globalRegistry,name)){
-                // right now, silently fail...  assume user accidentally defined twice.
-                $log("module registry for " + name + " called more than once");
-                return;
-            }
-
-            globalRegistry[name] = {
-                name: name,
-                deps: deps,
-                factory: factory
-            };
-        },
-        remove: function(name){
-            var value = globalRegistry[name];
-            delete globalRegistry[name];
-            return value;
-        }
-    }
-})();
-
-
-
+    },
+    remove: container.remove
+};
 
 Knuckles.viewModel = {};
 
@@ -51,173 +44,61 @@ Knuckles.viewModel.fn = {
     $serialize: mapping.toJS
 };
 
-var
-    configModule = function(){
+var keys = function(obj){
+    var result = [], name;
+    for(name in obj){
+        if(has(obj,name)) result.push(name);
+    }
+    return result;
+};
 
-    },
-    runner = function(){
+extend(Knuckles.viewModel,{
+    define: function(config){
+        var name = config.name,
+            deps = config.deps || [],
+            proto = config.proto || {},
+            factory = config.factory,
+            extenders = config.extenders || {},
+            combinedDeps = [].concat(keys(extenders)).concat(deps);
 
-    };
-
-/**
- * @typedef {Knuckles.Module}
- * @method {function} service - API to create a service
- * @method {function} viewModel - API to create a viewModel
- * @method {function} bindingHandler - API to create a bindingHandler
- */
-
-Knuckles.module = (function(){
-
-
-
-    /**
-     * Returns a Knuckles module
-     * @method module
-     * @param {string} name - Module name
-     * @param {Array.<string>} [requires] - an array of required resources
-     * @returns {Knuckles.Module}
-     */
-    return function(name, requires){
-
-        /**
-         * @typedef {Object} RegistryEntry
-         * @property {string} name - Name of the resource to be registered
-         * @property {Array.<string>} deps - List of dependencies for the resource
-         * @property {Function} factory - a factory function to construct the resource
-         */
+        return container.define({
+            name: name,
+            deps: combinedDeps,
+            factory: function(/* ... extenders, ... dependencies */){
 
 
+                var args = [undefined], // first entry will be "spec" object
 
-        var exports = {},
+                    //set of objects to "extend" the viewModel prototype
+                    extenderArgs = slice.call(arguments,0,deps.length);
 
-            /**
-             * The hashmap of registered resources for this module
-             * @type {Object.<string,RegistryEntry>}
-             */
-            registry = {},
-
-            /**
-             * The hashmap of constructed instances of registered resources for this module
-             * @type {Object.<string,Knuckles.Service|Knuckles.ViewModel>}}
-             */
-            cache = {};
-
-        function createResource(config){
-            var name = config.name,
-                deps = config.deps || [],
-                factory = config.factory;
+                //args to be passed to the constructor function
+                push.apply(args,slice.call(arguments,deps.length));
 
 
-            // factory is required.
-            if(!isFunction(factory)){
-                $error(1234,"config object must provide factory function");
-                return;
-            }
+                var Ctor = function(spec){
+                    args[0] = spec;
+                    return factory.apply(this,args);
+                };
 
-            // try to use factory function name if name was not explicitly given.  otherwise error.
-            name || (name = factory.name) || $error(1235,"config object must provide a name");
+                // alias 'fn' as prototypew
+                Ctor.fn = Ctor.prototype;
 
-
-            if(has(registry,name)){
-                // right now, silently fail...  assume user accidentally defined twice.
-                $log("module registry for " + name + " called more than once");
-                return;
-            }
-
-            registry[name] = {
-                name: name,
-                deps: deps,
-                factory: factory
-            };
-        }
-
-        function getResource(name){
-            // look for cached version first
-            var cached = cache[name];
-            if(cached !== undefined){return cached;}
-
-            var entry = registry[name];
-
-            if(entry === undefined){
-                entry = globalRegistry[name];
-            }
-            if(entry === undefined){
-                $error(1236,"Factory for " + name + " not registered.");
-                return null;
-            }
+                //TODO: get this set up...
+                // where is i?
+                var instExtenders = map(extenders,function(el,name){
+                    return extenderArgs[i](el);
+                });
 
 
-            var constructed = entry.factory.apply(null,map(entry.deps,getResource));
+                // add prototype methods
+                extenderArgs.unshift(Ctor.fn, Knuckles.viewModel.fn); // first arg, Knuckles.viewModel.fn
+                extenderArgs.push(proto); // last arg (overrides everything else)
+                extend.apply(null,extenderArgs);
 
-            cache[name] = constructed;
-
-            return constructed;
-        }
-
-
-        //TODO:
-//        function createBindingHandler(config){
-//
-//        }
-
-
-        function createViewModel(config){
-            var name = config.name,
-                deps = config.deps || [],
-                proto = config.proto || {},
-                factory = config.factory,
-                extenders = config.extenders || [];
-
-            return createResource({
-                name: name,
-                deps: deps,
-                factory: function(){
-                    // not cached, must construct + inject...
-                    var args = [undefined], // first entry will be "spec" object
-                        extenderArgs = map(extenders,getResource); // set of prototype objects to inherit from
-                    //fill in args
-                    push.apply(args,map(deps,getResource));
-
-
-                    var Ctor = function(spec){
-                        if(spec !== undefined){
-                            args[0] = spec;
-                        }
-                        return factory.apply(this,args);
-                    };
-
-                    // alias 'fn' as prototype
-                    Ctor.fn = Ctor.prototype;
-
-                    // add prototype methods
-                    extenderArgs.unshift(Ctor.fn,Knuckles.viewModel.fn); // first arg, Knuckles.viewModel.fn
-                    extenderArgs.push(proto); // last arg (overrides everything else)
-                    extend.apply(null,extenderArgs);
-
-
-
-                    return Ctor;
-                }
-            });
-        }
-
-
-
-        return extend(exports,{
-            // builders
-            service: createResource,
-            viewModel: createViewModel,
-
-            // methods
-            config: configModule,
-            getResource: getResource,
-            clearCache: function(){
-                cache = {};
-            },
-
-            run: function(deps,fn){
-                fn.apply(null,map(deps,getResource));
+                return Ctor;
             }
         });
-    };
-})();
+    },
+    remove: container.remove
+});

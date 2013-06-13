@@ -51,3 +51,40 @@ container.use(['test4'],function(test4){
 });
 
 
+
+
+
+
+Knuckles.extenders.define({
+    name: 'publishable',
+    deps:['$http'],
+    factory: function(config,$http){
+        return {
+            publish: function(){
+               $http.post({
+                   url: config.rootUri + '/publish',
+                   data: this.id
+               });
+            }
+        };
+    }
+});
+
+
+Knuckles.viewModel.define({
+    name: 'FeedView',
+    deps: ['$http','$deferred','$timeout'],
+    factory: function(spec,$http,$deferred,$timeout){
+        var self = this;
+        self.id = ko.observable();
+        self.name = ko.observable();
+
+
+        self.$populate(spec);
+    },
+    extenders: {
+        'publishable': {
+            rootUri: '/feed'
+        }
+    }
+});

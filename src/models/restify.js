@@ -108,3 +108,69 @@ var restify = function(Ctor, resource, config){
 
     return Ctor;
 };
+
+//Knuckles.viewModel.define({
+//    name: 'Cocktail',
+//    deps: [],
+//    extenders: {
+//        'restify': true,
+//        'restify2': {
+//            resource: 'cocktail'
+//        }
+//    }
+//});
+
+Knuckles.extender.define({
+    name: 'restify',
+    deps: ['$http'],
+    defaults: {
+        urlPrefix: "/",
+        idKey: "id"
+    },
+    factory: function(cfg,$http){
+
+        var removeSlashes = function(str){
+            return str.replace(/\//gi,'');
+        }
+        var constructUrl = function(self){
+            return map([cfg.urlPrefix,cfg.resource,unwrap(self.id)],removeSlashes).split('/');
+        };
+
+        return {
+            load: function(success, error){
+                var self = this;
+                return $http.get({url: '/' + resource + '/' + unwrap(self.id)})
+                    .done(function(data){
+                        self.$deserialize(data);
+                    })
+                    .done(success || noop)
+                    .fail(error || noop);
+            },
+            create: function(success, error){
+                var self = this;
+                return $http.put({url: '/' + resource})
+                    .done(function(data){
+                        self.$deserialize(data);
+                    })
+                    .done(success || noop)
+                    .fail(error || noop);
+            },
+            save: function(success, error){
+                var self = this;
+                return $http.post({url: '/' + resource + '/' + unwrap(self.id)})
+                    .done(function(data){
+                        self.$deserialize(data);
+                    })
+                    .done(success || noop)
+                    .fail(error || noop);
+            },
+            delete: function(success, error){
+                var self = this;
+                return $http.delete({ url: '/' + resource + '/' + unwrap(self.id)})
+                    .done(success || noop)
+                    .fail(error || noop);
+            }
+        }
+
+    }
+})

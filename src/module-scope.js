@@ -5,7 +5,8 @@ var ArrayProto = Array.prototype,
 
 
 // Establish the object that gets returned to break out of a loop iteration.
-var breaker = {};
+var breaker = {},
+    noop = function(){};
 
 
 // Create quick reference variables for speed access to core prototypes.
@@ -177,8 +178,8 @@ var trim = function(value) {
 };
 
 
-var $error = function(code,message){
-    throw '' + code + ': ' + message;
+var $fail = function(message, code){
+    throw new Error('' + (!!code ? code + ': ' : '') + message);
 };
 
 //todo: use debug somehow?
@@ -193,3 +194,7 @@ var $log = function(msg){
             console.log(slice.apply(arguments).split(' '));
     }
 };
+
+//alias for $.Deferred... this could change to another deferred provider later.  perhaps our own?
+var $deferred = $.Deferred,
+    $when = $.when;
