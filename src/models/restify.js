@@ -128,6 +128,8 @@ var constructUrl = function(cfg, self){
     return map([cfg.urlPrefix,cfg.resource,unwrap(self.id)],removeSlashes).split('/');
 };
 
+
+//TODO: look up that REST API best practices article...
 Knuckles.extender.define({
     name: 'restify',
     deps: ['$http'],

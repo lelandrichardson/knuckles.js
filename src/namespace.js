@@ -1,3 +1,3 @@
 // initialize if empty
-Knuckles || (Knuckles = {});
-window['Knuckles'] = Knuckles;
+/** @namespace */
+var Knuckles = window['Knuckles'] = Knuckles || {};

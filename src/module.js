@@ -1,25 +1,84 @@
+/** @namespace */
 Knuckles.service = {
+    /**
+     * Defines a service.  Direct alias for {@link Knuckles.container.define}.
+     */
     define: container.define,
+    /**
+     * Removes a service from the IOC container.  Direct alias for {@link Knuckles.container.remove}.
+     */
     remove: container.remove
 };
 
+
+/** @namespace */
 Knuckles.extender = {
 
-    /**
-     *
-     * @typedef {Object} ExtenderConfig
-     * @property {string} name
-     * @property {Array<string>} deps
-     *
-     *
-     *
-     */
+
 
 
     /**
+     * Define an extender which can be applied to any viewModel
      *
-     * @param {Object} config
-     * @returns {*}
+     * @example
+     * Knuckles.extender.define({
+     *    name: 'MyExtender',
+     *    deps: ['dep1','dep2'],
+     *    defaults: {
+     *        prop1: 'abc',
+     *        prop2: 'def'
+     *    }
+     *    fn: function(config,dep1,dep2){
+     *        // here you have access to the config object passed in, and dependencies
+     *        // you are required to return an object hash of methods to "extend" the prototype of
+     *        // the viewModel you are wishing to extend
+     *        return {
+     *            method1: function(){
+     *                // here `this` is bound to the corresponding instance of the view model...
+     *            }
+     *        };
+     *    },
+     *    static: function(config,dep1,dep2){
+     *        // here you have access to the config object passed in, and dependencies
+     *        // you are required to return an object hash of methods to directly extend the
+     *        // corresponding viewModel Constructor
+     *        return {
+     *            staticMethod: function(){
+     *                // here `this` is bound to the Constructor
+     *            }
+     *        };
+     *    },
+     * });
+     *
+     *
+     * @example
+     * Knuckles.extender.define({
+     *    name: 'MyExtender',
+     *    fn: {
+     *        method1: function(){
+     *            // here `this` is bound to the corresponding instance of the view model...
+     *        }
+     *    },
+     *    static: {
+     *        method1: function(){
+     *            // here `this` is bound to the corresponding instance of the view model...
+     *        }
+     *    }
+     * });
+     *
+     *
+     *
+     *
+     * @config {ResourceName} name - The name of the extender.
+     * @config {DependencyList} [deps=[]] - Array of dependency names to be passed into factories
+     * @config {FactoryMethod|object} [fn] -
+     * @config {FactoryMethod|object} [static] - Either a
+     * @config {object} [defaults] - An optional object defining the default values of the "config" object to be passed
+     *      into the factory functions
+     * @config {boolean} [cache=false] - Whether or not a fresh resolved instance should be stored into the
+     *      dependency resolver cache or not.  Essentially, if these methods act identically across any viewModel, and
+     *      do not require any config objects to be passed in etc, then cache should be true.  It assumes a default
+     *      value of false.
      */
     define: function(config){
         var name = config.name,
@@ -58,13 +117,49 @@ Knuckles.extender = {
     remove: container.remove
 };
 
+/** @namespace */
 Knuckles.viewModel = {};
 
+/** @class */
+Knuckles.ViewModelBase = function(){};
+
+/**
+ * This namespace acts like a prototype for all View Models defined in Knuckles.
+ * Users can add methods to it which they would like all view models to automatically inherit.
+ *
+ * @namespace
+ * @lends Knuckles.ViewModelBase
+ * */
 Knuckles.viewModel.fn = {
+    /**
+     * Populates the corresponding ViewModel from a pure JS object passed in.  This is often parsed JSON data
+     * coming from the server or some data store.
+     *
+     * @this Knuckles.ViewModelBase
+     * @param data - a pure JS object to be mapped to the corresponding ViewModel.
+     */
     $populate: function(data){
         return mapping.fromJS(this,data);
     },
-    $serialize: mapping.toJS
+    /**
+     * "Serializes" the corresponding ViewModel into a pure JS object.
+     *
+     * @this Knuckles.ViewModelBase
+     * @returns {object} -
+     */
+    $serialize: function(){
+        return mapping.toJS(this);
+    },
+
+    /**
+     * Allows one to easily configure which properties of the given {@link ViewModelBase} will be excluded when
+     * calling {@link ViewModelBase#$serialize}.
+     *
+     * @param {Array.<string>|string} names - a property name or array of property names to be ignored
+     */
+    $jsonIgnore: function(names){
+        //TODO:
+    }
 };
 
 var keys = function(obj){
@@ -75,7 +170,54 @@ var keys = function(obj){
     return result;
 };
 
-extend(Knuckles.viewModel,{
+extend(Knuckles.viewModel,
+/** @lends Knuckles.viewModel */
+{
+
+    /**
+     * Defines a View Model.
+     *
+     * @example
+     * // call viewModel.define with only a named function (but no dependencies)
+     * Knuckles.viewModel.define(function MyViewModel(spec){
+     *      this.id = ko.observable();
+     *      this.name = ko.observable();
+     *      this.foo = ko.observableArray();
+     *
+     *      this.$populate(spec);
+     * });
+     *
+     *
+     * @example
+     * Knuckles.viewModel.define({
+     *     name: 'MyViewModel',
+     *     deps: ['$http','SubCollection'],
+     *     factory: function(spec,$http,SubCollection){
+     *         this.id = ko.observable();
+     *         this.name = ko.observable();
+     *         this.foo = ko.observableArray().ofType(SubCollection);
+     *
+     *         this.$populate(spec);
+     *     },
+     *     fn: {
+     *          sayHello: function(){
+     *              alert("Hello, My Name is " + this.name);
+     *          }
+     *     },
+     *
+     *
+     *
+     * });
+     *
+     *
+     *
+     * @param {object|function} config -
+     * @config {ResourceName} [name] -
+     * @config {DependencyList} [deps=[]] -
+     * @config {FactoryMethod|object} [fn] -
+     * @config {FactoryMethod} factory
+     * @config {object} extenders -
+     */
     define: function(config){
         var name = config.name,
             deps = config.deps || [],
@@ -123,5 +265,7 @@ extend(Knuckles.viewModel,{
             }
         });
     },
+
+    /** Alias for {@link Knuckles.container.remove} */
     remove: container.remove
 });

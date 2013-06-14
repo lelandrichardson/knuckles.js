@@ -150,33 +150,16 @@ var
 
 // string functions
 // --------------------------------------------
-
-/**
- * @name angular.lowercase
- * @function
- *
- * @description Converts the specified string to lowercase.
- * @param {string} string String to be converted to lowercase.
- * @returns {string} Lowercased string.
- */
-var lowercase = function(string){return isString(string) ? string.toLowerCase() : string;};
+var lowercase = function(string){return isString(string) ? string.toLowerCase() : string;},
+    uppercase = function(string){return isString(string) ? string.toUpperCase() : string;},
+    trim = function(value) {
+        return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+    };
 
 
-/**
- * @name angular.uppercase
- * @function
- *
- * @description Converts the specified string to uppercase.
- * @param {string} string String to be converted to uppercase.
- * @returns {string} Uppercased string.
- */
-var uppercase = function(string){return isString(string) ? string.toUpperCase() : string;};
 
-var trim = function(value) {
-    return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
-};
-
-
+// Global Utility Functions
+// --------------------------------------------
 var $fail = function(message, code){
     throw new Error('' + (!!code ? code + ': ' : '') + message);
 };
