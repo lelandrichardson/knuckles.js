@@ -1,3 +1,4 @@
+
 // useful prototypes
 var ArrayProto = Array.prototype,
     ObjProto = Object.prototype,

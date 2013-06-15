@@ -1,16 +1,20 @@
 {
-  "name": "knuckles",
-  "description": "Web Application Framework wrapper for Knockout.js",
-  "url": "http://knockoutjs.com/",
-  "version": "0.0.1",
-  "license": "MIT",
-  "author": "Leland Richardson",
-  "main": "build/output/knuckles-latest.debug.js",
-  "scripts": {
-    "prepublish": "bash build/build.sh",
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lelandrichardson/knuckles.js.git"
-  }
+    "name": "knuckles",
+    "description": "Web Application Framework wrapper for Knockout.js",
+    "url": "http://knockoutjs.com/",
+    "version": "0.0.1",
+    "license": "MIT",
+    "author": "Leland Richardson",
+    "main": "build/output/knuckles-latest.debug.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lelandrichardson/knuckles.js.git"
+    },
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-jshint": "~0.1.1",
+        "grunt-contrib-uglify": "~0.2.0",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-watch": "~0.3.1"
+    }
 }

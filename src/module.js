@@ -1,4 +1,10 @@
-/** @namespace */
+
+/**
+ *
+ * @typedef {object} Knuckles.ViewModelBase
+ */
+
+/*** @namespace */
 Knuckles.service = {
     /**
      * Defines a service.  Direct alias for {@link Knuckles.container.define}.
@@ -11,7 +17,7 @@ Knuckles.service = {
 };
 
 
-/** @namespace */
+/*** @namespace */
 Knuckles.extender = {
 
 
@@ -117,26 +123,28 @@ Knuckles.extender = {
     remove: container.remove
 };
 
-/** @namespace */
+/*** @namespace */
 Knuckles.viewModel = {};
 
-/** @class */
+
+// note: not sure this is needed, but this could serve as the constructor for the
+// base "viewModel" class...?
 Knuckles.ViewModelBase = function(){};
+
 
 /**
  * This namespace acts like a prototype for all View Models defined in Knuckles.
  * Users can add methods to it which they would like all view models to automatically inherit.
  *
- * @namespace
- * @lends Knuckles.ViewModelBase
+ * @lends {Knuckles.ViewModelBase}
  * */
 Knuckles.viewModel.fn = {
     /**
      * Populates the corresponding ViewModel from a pure JS object passed in.  This is often parsed JSON data
      * coming from the server or some data store.
      *
-     * @this Knuckles.ViewModelBase
-     * @param data - a pure JS object to be mapped to the corresponding ViewModel.
+     * @this {Knuckles.ViewModelBase}
+     * @param {object} data - a pure JS object to be mapped to the corresponding ViewModel.
      */
     $populate: function(data){
         return mapping.fromJS(this,data);
@@ -144,7 +152,7 @@ Knuckles.viewModel.fn = {
     /**
      * "Serializes" the corresponding ViewModel into a pure JS object.
      *
-     * @this Knuckles.ViewModelBase
+     * @this {Knuckles.ViewModelBase}
      * @returns {object} -
      */
     $serialize: function(){

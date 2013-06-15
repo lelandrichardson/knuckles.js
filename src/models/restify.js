@@ -1,3 +1,4 @@
+
 var restify = function(Ctor, resource, config){
 
     var serialize = config.serialize || ko.toJS;

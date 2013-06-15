@@ -1,3 +1,4 @@
+
 /**
  * @name ExtenderConfig
  * @typedef {Object} ExtenderConfig
