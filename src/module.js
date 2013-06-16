@@ -248,7 +248,9 @@ extend(Knuckles.viewModel,
                 //args to be passed to the constructor function
                 push.apply(args,slice.call(arguments,deps.length));
 
-
+                // note: consider doing something like this:
+                // http://stackoverflow.com/questions/14866014/debugging-javascript-backbone-and-marionette
+                // this would allow for nicer function names while debugging
                 var Ctor = function(spec){
                     args[0] = spec;
                     return factory.apply(this,args);

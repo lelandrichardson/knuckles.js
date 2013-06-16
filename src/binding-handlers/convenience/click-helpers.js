@@ -1,4 +1,3 @@
-
 each({
     clickIncrement: function(val){
         val(val()+1);
@@ -11,7 +10,6 @@ each({
     }
 },
 function(func,bindingName){
-    var abc = 1;
     bindingHandlers[bindingName] = {
         init: function (element,valueAccessor) {
             return bindingHandlers.click(element,function(){

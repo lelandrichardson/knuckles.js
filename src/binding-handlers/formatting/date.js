@@ -4,7 +4,7 @@ bindingHandlers.date = {
             var val = unwrap(valueAccessor()),
                 dateFormat = allBindingsAccessor().dateFormat,
                 date = new Date(val),
-                formatted = Knuckles.formatting.date(date, dateFormat);
+                formatted = formatting.date(date, dateFormat);
             return formatted;
         });
     }

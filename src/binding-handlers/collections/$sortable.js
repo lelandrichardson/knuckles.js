@@ -1,6 +1,6 @@
 //sortableList (requires jquery-ui)
 if($.fn.sortable){
-    ko.bindingHandlers.sortableList = {
+    bindingHandlers.sortableList = {
         init: function (element, valueAccessor) {
             var list = valueAccessor();
             var oldPosition = -1;

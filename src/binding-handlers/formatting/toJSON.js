@@ -1,7 +1,7 @@
-ko.bindingHandlers.toJSON = {
+bindingHandlers.toJSON = {
     update: function(element, valueAccessor){
-        return ko.bindingHandlers.text.update(element,function(){
-            return ko.toJSON(valueAccessor(),null,2);
+        return bindingHandlers.text.update(element,function(){
+            return toJSON(valueAccessor(),null,2);
         });
     }
 };

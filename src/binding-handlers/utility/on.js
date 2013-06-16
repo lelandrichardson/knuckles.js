@@ -1,9 +1,8 @@
-//TODO: jQuery dependency
 //delegated event handling via $.on
-ko.bindingHandlers.on = {
+bindingHandlers.on = {
     init: function(element, valueAccessor){
         var eventsToHandle = unwrap(valueAccessor() || {});
-        $.each(eventsToHandle, function(key) {
+        each(eventsToHandle, function(key) {
             if (typeof key == "string") {
                 var eventName = key.substr(0,key.indexOf(" ")),
                     selector = key.substr(key.indexOf(" ") + 1);
@@ -17,7 +16,7 @@ ko.bindingHandlers.on = {
 
                     try {
                         // Take all the event args, and prefix with the viewmodel
-                        var argsForHandler = Array.prototype.slice.call(arguments);
+                        var argsForHandler = slice.call(arguments);
                         argsForHandler.unshift(context.$data);
                         handlerReturnValue = handlerFunction.apply(context.$data, argsForHandler);
                     } finally {

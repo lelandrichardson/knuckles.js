@@ -8,7 +8,7 @@ bindingHandlers.timeAgo = {
         //NOTE: for now, we are using Date() constructor with ISO 8601 - **this is not compatibile with IE8**
         var val = unwrap(valueAccessor()),
             date = new Date(val),
-            timeAgo = Knuckles.formatting.timeAgo(date);
+            timeAgo = formatting.timeAgo(date);
         return bindingHandlers.html.update(element, function () {
             return '<time datetime="' + date.toISOString() + '">' + timeAgo + '</time>';
         });

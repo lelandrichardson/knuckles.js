@@ -98,7 +98,7 @@ var container = Knuckles.container = (function(){
 
         // important to do === true since second param could be an index being called from map();
         if(entry === undefined){
-            if(requireWasUsed !== true){
+            if(requireWasUsed !== true && isFunction(require)){
                 require([name],function(/* not sure if we need arguments here??? */){
 
                     var newPromise = getResourcePromise(name,false);
@@ -107,8 +107,8 @@ var container = Knuckles.container = (function(){
                     });
                 });
             } else {
-                promise.fail("Resource '" + name + 'was not found');
-                $fail("Resource '" + name + 'was not found',1234);
+                promise.fail("Resource '" + name + "' was not found");
+                $fail("Resource '" + name + "' was not found",1234);
             }
         } else {
 
@@ -174,7 +174,8 @@ var container = Knuckles.container = (function(){
         return $when.apply(null,map(deps,getResourcePromise))
             .done(callback || noop)
             .fail(function(reason){$fail(reason);})
-            .always(always);
+            .always(always)
+            .promise();
     }
 
     return {
@@ -229,6 +230,13 @@ var container = Knuckles.container = (function(){
             } else {
                 delete registry[name];
             }
+        },
+        isRegistered: function(name){
+            if(!isString(name)){
+                $fail("expecting parameter 'name' to be a string");
+                return;
+            }
+            return has(registry,name);
         }
     };
 

@@ -1,4 +1,4 @@
-Knuckles.formatting = (function () {
+var formatting = Knuckles.formatting = (function () {
 
     // currency formatting
     // -----------------------------------------------------

@@ -315,4 +315,4 @@
         },{ default: 'yyyy-MM-dd HH:mm:ss' })
     }) ;
 
-})(Knuckles.formatting);
+})(formatting);

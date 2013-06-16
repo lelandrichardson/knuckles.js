@@ -1,5 +1,4 @@
-
-ko.bindingHandlers.stopBinding = {
+bindingHandlers.stopBinding = {
     init: function () {
         return { controlsDescendantBindings: true };
     }
