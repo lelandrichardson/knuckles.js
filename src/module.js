@@ -257,13 +257,16 @@ extend(Knuckles.viewModel,
                 // alias 'fn' as prototypew
                 Ctor.fn = Ctor.prototype;
 
-
+                // add mixins
                 extend(Ctor.fn,Knuckles.viewModel.fn);
                 each(extenderArgs,function(extender, idx){
                     var cfg = extenders[extender['extenderName']];
                     var toTackOn = extender(cfg);
 
+                    // static methods
                     extend(Ctor,toTackOn.static);
+
+                    //instance methods
                     extend(Ctor.fn,toTackOn.fn);
                 });
                 extend(Ctor.fn,fn);
