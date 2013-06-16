@@ -241,20 +241,44 @@ And thus, one could use this extender like so:
 
 ##Provided Services
 
-**The `$http` Service**
+**The `$http` Service**<br>
+A service for making AJAX requests.  This is essentially a proxy to `$.ajax` but provides several convenience methods, and has some different defaults.
+
+- `$http.get()` make a GET request
+- `$http.put()` make a PUT request
+- `$http.post()` make a POST request
+- `$http.delete()` make a DELETE request
+- `$http()` make an AJAX request with whatever configuration you send across it.
+
+The defaults used assume a JSON based web service, and will also perform the processing of the JSON and unwrapping of observables.
 
 
 
-**The `$localStorage` Service**
+**The `$localStorage` Service**<br>
+Get access to the browser's `localStorage` object.
+
+- `$localStorage.get(string key)` returns a parsed JS object
+- `$localStorage.set(string key)` stores an arbitrary JS object
+- `$localStorage.getItem(string key)` returns the raw string stored via localStorage
+- `$localStorage.getString(string key)` direct alias to `$localStorage.getItem`
+- `$localStorage.isSupported` a boolean indicating whether or not localStorage is supported on the current browser.  In cases where it is not, the above methods are still available, but they are not functional.
+
+Note: there is plan to improve the localStorage object to provide some fallback mechanisms to support a wider range of browsers.
+
+**The `$async` Service**<br>
+This is essentially a wrapper around the native methods for `setTimeout` `setInterval` and `setImmediate`, which are typically very difficult to test.
+
+The exposed methods are:
+
+- `$async.timeout`
+- `$async.interval`
+- `$async.cancel`
+- `$async.defer`
 
 
 
-**The `$async` Service**
-
-
-
-**The `$deferred` Service**
-
+**The `$deferred` Service**<br>
+This service is essentially a proxy to [jQuery's `$.Deferred` promise implementation](http://api.jquery.com/jQuery.Deferred/).
 
 ##Provided Binding Handlers
 
