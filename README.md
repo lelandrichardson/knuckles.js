@@ -128,15 +128,39 @@ The `deps` property is an array of resource names as defined by the Knuckles IOC
 
 ###Declaring Dependencies
 
-ViewModels (and all other resources using the IOC Container of Knuckles) are 
+ViewModels (and all other resources using the IOC Container of Knuckles) are declared with a `deps` arrray of string "Resource Names" in the config param of the define function.
 
+Each resource will have associated "factory" functions that are defined upon resource definition.  The arguments of the function will be bound to the corresponding index of the dependency array.
 
+Knuckles exposes the IOC container in the namespace `Knuckles.container` which exposes a `.define()` and `.remove()` method.  All resources eventually get registered through these methods, but often go through some hoops beforehand.  For instance, `Knuckles.viewModel.define` calls `Knuckles.container.define`, but with a factory method much different than that of the view model's.
+
+In the case of the view model, the first parameter of the config function is always a "spec" or "config" param which canonically is a pure JS representation of the "model", usually coming from the server or some external source.
+
+I can define a viewModel with several dependencies:
+
+    Knuckles.viewModel.define({
+        name: 'MyViewModel',
+        deps: ['$http','MyService','MyOtherViewModel']
+        factory: function(spec, $http, MyService, MyOtherViewModel){
+            // MyViewModel constructor function
+            // here I have one "spec" object, and the rest of my dependencies
+        }
+    });
+
+    Knuckles.run(['MyViewModel'],function(MyViewModel){
+        // notice that here i have the constructor function
+        // but I only call it with a single "spec" parameter...
+        // all of the dependencies are taken care of
+        var myvm = new MyViewModel({prop1: "abc", prop2: 123});
+
+        // app code
+    });
 
 
 
 ###ViewModelBase Abstract Class
 
-
+//TODO:
 
 
 ##Mixin-Style Inheritence
@@ -234,10 +258,15 @@ And thus, one could use this extender like so:
         person.update(); // updates person on server
     });
 
+As you might be able to see, this allows for quite a bit of flexibility... and can provide for some very clean code.  Some useful mixins are provided through Knuckles by default, as shown below:
 
 ##Provided Extensions
 
+//TODO:
 
+##Provided Mixins
+
+//TODO:
 
 ##Provided Services
 
@@ -271,7 +300,7 @@ This is essentially a wrapper around the native methods for `setTimeout` `setInt
 The exposed methods are:
 
 - `$async.timeout`
-- `$async.interval`
+- `$async.interval` can be thought of as substitute for `window.set
 - `$async.cancel`
 - `$async.defer`
 
@@ -357,6 +386,64 @@ This syntax is similar to Backbone's event object hash.  The properties on the o
 ##Templating via Require.js
 
 Using the work of Ryan Niemeyer with his [knockout-amd-helpers](https://github.com/rniemeyer/knockout-amd-helpers) project, Knuckles has the ability to reference external templates via the AMD loader's text plugin.  This allows you to create HTML templates in their own `.tmpl.html` file, and reference them using knockout's `template` binding handler without having to worry about loading it onto the page in a `<script>` tag.  This allows you to be much more DRY with your templates.
+
+##Testing Knuckles.js Code
+
+One of the primary goals of Knuckles.js is to provide easily testable code.
+We have already come a long way with providing natural structure to our codebase with the use of services,
+viewmodels, mixins, etc., but the primary win here is the fact that we can now inject test fictures to test things independently...
+
+For Example,
+
+Let's say I have an application which persists data via local storage.  I might create a storage service like so:
+
+    Knuckles.service.define({
+        name: 'todoStorage',
+        deps: ['$localStorage'],
+        factory: function ($localStorage) {
+            var STORAGE_ID = 'todo-app-storage';
+    
+            return {
+                get: function () {
+                    return $localStorage.get(STORAGE_ID);
+                },
+                put: function (data) {
+                    $localStorage.set(STORAGE_ID, data);
+                }
+            }
+        }
+    });
+
+And additionally, I have an app view model which uses the service:
+
+    Knuckles.viewModel.define({
+        name: 'TodoVM',
+        deps: ['todoStorage'],
+        factory: function(spec, storage){
+            // initialization stuff
+            this.todos = ko.observableArray();
+
+            // load data via storage...
+            var fromStorage = storage.get();
+            this.$populate(fromStorage);
+            
+            // methods
+            this.save = function(){
+                // save to storage
+                storage.set(this.$serialize());
+            }
+        }
+    });
+
+Testing this would traditionally be very difficult because you are actually relying on the reference to the localStorage, and different tests could interfere with eachother if run in parallel.
+
+Knuckles, however, provides a mechanism for you to inject mock resources as test fixtures.  This is very helpful:
+
+
+//TODO: testing example
+
+
+
 
 
 ##License
