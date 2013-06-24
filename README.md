@@ -449,3 +449,19 @@ Knuckles, however, provides a mechanism for you to inject mock resources as test
 ##License
 
 Use of Knuckles.js is permitted under the MIT license - [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php) for optimum compatibility with Knockout.
+
+
+##What's next?
+
+There are lot's of things that I have planned for this library that aren't done yet. some may include:
+
+
+- full fledged flexible/configurable 'Restify' mixin that builds a bunch of CRUD operations based on a configurable but "RESTful" set of conventions.  A lot of work on this has already been done, but isn't finished or tested.
+- build a way to define "enums" which you can define observables to be of that type, and they will automatically be constrained to those values.  One could build some really straightforward binding Handlers to build `<select>` dropdowns from this.
+- have extenders be more hierarchical... meaning that one extender could require that other extenders are applied as well... without the user having to do that?  This might be tricky because of the config stuff.
+- build a "Knuckles-ui.js" library which has binding handlers for most (if not all) of the jquery-ui plugins and maybe more.
+- add a full-fledged validation library...  this is a big one.  I am experimenting with a couple of different approaches to how to do this and am not sure what I like most.
+- some sort of "widget factory".  We already have the string template source defined, so this could be fairly straightforward using that.
+- build some sort of "smart" form-building binding handler that would take in a view model (properly decorated) and spit out an HTML form that essentially followed a template that you could configure.  This could really help make some proprietary data-entry type web apps really straightforward to make...
+- have several built-in "test fixtures"
+- build a starter template for a SPA using Knuckles.js

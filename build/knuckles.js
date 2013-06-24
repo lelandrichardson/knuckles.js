@@ -137,6 +137,27 @@ function valueFn(value){
     };
 }
 
+var keys = function(obj){
+    var result = [], name;
+    for(name in obj){
+        if(has(obj,name)) result.push(name);
+    }
+    return result;
+};
+
+/**
+ * Generates random strings for use as UUIDs
+ */
+var newGuid = (function(){
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return function(){
+        return s4() + s4();
+    }
+})();
 
 
 // Knockout Shortcut Methods
@@ -390,9 +411,9 @@ var container = Knuckles.container = (function(){
         }
         // retrieve collection of promises resolving dependencies...
         return $when.apply(null,map(deps,getResourcePromise))
+            .always(always)
             .done(callback || noop)
             .fail(function(reason){$fail(reason);})
-            .always(always)
             .promise();
     }
 
@@ -452,7 +473,7 @@ var container = Knuckles.container = (function(){
         isRegistered: function(name){
             if(!isString(name)){
                 $fail("expecting parameter 'name' to be a string");
-                return;
+                return false;
             }
             return has(registry,name);
         }
@@ -1225,13 +1246,7 @@ Knuckles.viewModel.fn = {
     }
 };
 
-var keys = function(obj){
-    var result = [], name;
-    for(name in obj){
-        if(has(obj,name)) result.push(name);
-    }
-    return result;
-};
+
 
 extend(Knuckles.viewModel,
 /** @lends Knuckles.viewModel */
@@ -1283,11 +1298,43 @@ extend(Knuckles.viewModel,
      */
     define: function(config){
         var name = config.name,
+            factory = config.factory,
             deps = config.deps || [],
             fn = config.fn || {},
-            factory = config.factory,
+            _static = config.static || {},
             extenders = config.extenders || {},
-            combinedDeps = [].concat(keys(extenders)).concat(deps);
+            extenderKeys = keys(extenders);
+
+
+
+
+        if(factory === undefined && isFunction(config)){
+            factory = config;
+        }
+        if(name === undefined && !isEmptyVal(factory.name)){
+            name = factory.name;
+        }
+        if(!name || !isFunction(factory)){
+            $fail("view model must have at least a factory function and name");
+        }
+
+        // register the prototype as an "extender"
+        // and then add it to the dependency list...
+        var protoExtenderName = name + '__fn__' + newGuid();
+
+        // define extender
+        Knuckles.extender.define({
+            name:protoExtenderName,
+            deps: deps,
+            fn: fn,
+            static: _static
+        });
+
+        extenders[protoExtenderName] = null; // null config
+
+        extenderKeys.push(protoExtenderName); // push to make it be applied last
+
+        var combinedDeps = extenderKeys.concat(deps);
 
         return container.define({
             name: name,
@@ -1297,11 +1344,11 @@ extend(Knuckles.viewModel,
 
                 var args = [undefined], // first entry will be "spec" object
 
-                    //set of objects to "extend" the viewModel prototype
-                    extenderArgs = slice.call(arguments,0,deps.length);
+                //set of objects to "extend" the viewModel prototype
+                extenderArgs = slice.call(arguments,0,arguments.length - deps.length);
 
                 //args to be passed to the constructor function
-                push.apply(args,slice.call(arguments,deps.length));
+                push.apply(args,slice.call(arguments,arguments.length - deps.length));
 
                 // note: consider doing something like this:
                 // http://stackoverflow.com/questions/14866014/debugging-javascript-backbone-and-marionette
@@ -1311,22 +1358,21 @@ extend(Knuckles.viewModel,
                     return factory.apply(this,args);
                 };
 
-                // alias 'fn' as prototypew
+                // alias 'fn' as prototype
                 Ctor.fn = Ctor.prototype;
 
                 // add mixins
-                extend(Ctor.fn,Knuckles.viewModel.fn);
+                extend(Ctor.fn, Knuckles.viewModel.fn);
                 each(extenderArgs,function(extender, idx){
                     var cfg = extenders[extender['extenderName']];
                     var toTackOn = extender(cfg);
 
                     // static methods
-                    extend(Ctor,toTackOn.static);
+                    extend(Ctor, toTackOn.static);
 
                     //instance methods
-                    extend(Ctor.fn,toTackOn.fn);
+                    extend(Ctor.fn, toTackOn.fn);
                 });
-                extend(Ctor.fn,fn);
 
 
                 return Ctor;

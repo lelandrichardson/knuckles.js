@@ -5,7 +5,7 @@
     "version": "0.0.1",
     "license": "MIT",
     "author": "Leland Richardson",
-    "main": "build/output/knuckles-latest.debug.js",
+    "main": "build/knuckles.min.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/lelandrichardson/knuckles.js.git"

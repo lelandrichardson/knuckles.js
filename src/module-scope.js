@@ -93,6 +93,27 @@ function valueFn(value){
     };
 }
 
+var keys = function(obj){
+    var result = [], name;
+    for(name in obj){
+        if(has(obj,name)) result.push(name);
+    }
+    return result;
+};
+
+/**
+ * Generates random strings for use as UUIDs
+ */
+var newGuid = (function(){
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return function(){
+        return s4() + s4();
+    }
+})();
 
 
 // Knockout Shortcut Methods

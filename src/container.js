@@ -172,9 +172,9 @@ var container = Knuckles.container = (function(){
         }
         // retrieve collection of promises resolving dependencies...
         return $when.apply(null,map(deps,getResourcePromise))
+            .always(always)
             .done(callback || noop)
             .fail(function(reason){$fail(reason);})
-            .always(always)
             .promise();
     }
 
@@ -234,7 +234,7 @@ var container = Knuckles.container = (function(){
         isRegistered: function(name){
             if(!isString(name)){
                 $fail("expecting parameter 'name' to be a string");
-                return;
+                return false;
             }
             return has(registry,name);
         }
