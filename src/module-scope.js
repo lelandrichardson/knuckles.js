@@ -93,6 +93,7 @@ function valueFn(value){
     };
 }
 
+//todo: use native implementation if it is available
 var keys = function(obj){
     var result = [], name;
     for(name in obj){
@@ -123,6 +124,7 @@ var
     observable = ko.observable,
     observableArray = ko.observableArray,
     computed = ko.computed,
+    subscribable = ko.subscribable,
 
     unwrap = ko.utils.unwrapObservable,
 
@@ -148,6 +150,9 @@ var
                val === null ||
                val === "";
     },
+    isEmptyObject = function (o){
+        return isObject(o) && keys(o).length === 0;
+    },
     isArray = function (o) {
         return toString.call(o) === '[object Array]';
     },
@@ -168,6 +173,9 @@ var
     },
     isDate = function(o){
         return toString.call(o) == '[object Date]';
+    },
+    isDefined = function(o){
+        return o !== undefined;
     };
 
 // string functions

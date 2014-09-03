@@ -1,0 +1,39 @@
+{
+    "name": "knuckles",
+    "version": "0.0.1",
+    "homepage": "http://knockoutjs.com/",
+    "description": "Web Application Framework wrapper for Knockout.js",
+    "main": "build/knuckles.min.js",
+    "moduleType": [
+        "amd",
+        "globals",
+        "node"
+    ],
+    "keywords": [
+        "knockout",
+        "mvvm",
+        "mvc",
+        "spa",
+        "ioc"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "spec",
+        "examples",
+        "out",
+        "build/fragments"
+    ],
+    "dependencies": {
+        "knockout": ">=2.2.1",
+        "jquery":">=1.8.2"
+    },
+    "devDependencies": {
+        "grunt": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-contrib-uglify": "*"
+    }
+}

@@ -212,6 +212,9 @@ var
     },
     isDate = function(o){
         return toString.call(o) == '[object Date]';
+    },
+    isDefined = function(o){
+        return o !== undefined;
     };
 
 // string functions
